@@ -31,7 +31,7 @@ jobs:
               HAS_JIRA_ID=true
               break
             fi
-          done < <(git log --pretty=format:"%s" origin/main..HEAD)
+          done < <(git log -10 --pretty=format:"%s")
 
           if [ "$HAS_JIRA_ID" = false ]; then
             echo "Pipeline Failed: No commit contains a Jira ticket ID."
