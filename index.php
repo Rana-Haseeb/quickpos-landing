@@ -21,7 +21,10 @@
                     <a href="#pricing" class="text-gray-600 hover:text-blue-600 transition font-medium">Pricing</a>
                     <a href="#contact" class="text-gray-600 hover:text-blue-600 transition font-medium">Contact</a>
                     
-                    </div>
+                    <a href="#signup" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-5 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:-translate-y-0.5">
+                        Sign Up Free
+                    </a>
+                </div>
 
             </div>
         </div>
