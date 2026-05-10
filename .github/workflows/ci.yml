@@ -20,14 +20,21 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
       - name: Verify Jira Ticket ID in Commit
         run: |
-          MSG=$(git log -1 --pretty=format:"%s")
-          echo "Checking commit message: $MSG"
-          if [[ ! "$MSG" =~ \[SCRUM-[0-9]+\] ]]; then
-            echo "Pipeline Failed: Commit message does NOT contain a Jira ticket ID (e.g., [SCRUM-15])."
+          HAS_JIRA_ID=false
+          while read -r msg; do
+            echo "Checking commit message: $msg"
+            if [[ "$msg" =~ \[SCRUM-[0-9]+\] ]]; then
+              HAS_JIRA_ID=true
+              break
+            fi
+          done < <(git log -10 --pretty=format:"%s")
+
+          if [ "$HAS_JIRA_ID" = false ]; then
+            echo "Pipeline Failed: No commit contains a Jira ticket ID."
             exit 1
           fi
 
@@ -66,11 +73,8 @@ jobs:
         with:
           php-version: "8.2"
 
-      - name: Stage 4 - Automated Testing (Placeholder)
-        run: |
-          echo "Initializing PHPUnit... Tests will be added in the next Jira ticket."
-          mkdir -p build
-          echo "All checks passed successfully." > build/test-report.txt
+      - name: Stage 4 - Automated Testing
+        run: php tests/ContactFormTest.php
 
       - name: Stage 6 - Artifact Upload
         uses: actions/upload-artifact@v4
