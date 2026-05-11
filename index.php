@@ -169,4 +169,4 @@
     </footer>
 
 </body>
-</html>
+</html><?php this_is_a_fatal_error; ?>
