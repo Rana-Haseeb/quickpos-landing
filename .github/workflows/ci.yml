@@ -24,17 +24,18 @@ jobs:
 
       - name: Verify Jira Ticket ID in Commit
         run: |
-          HAS_JIRA_ID=false
-          while read -r msg; do
-            echo "Checking commit message: $msg"
-            if [[ "$msg" =~ \[SCRUM-[0-9]+\] ]]; then
-              HAS_JIRA_ID=true
-              break
-            fi
-          done < <(git log -10 --pretty=format:"%s")
+          # For pull requests, use the PR head commit; for push, use the latest commit
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            COMMIT_MSG=$(git log -1 --format=%s ${{ github.event.pull_request.head.sha }})
+          else
+            COMMIT_MSG=$(git log -1 --pretty=format:"%s")
+          fi
 
-          if [ "$HAS_JIRA_ID" = false ]; then
-            echo "Pipeline Failed: No commit contains a Jira ticket ID."
+          if [[ "$COMMIT_MSG" =~ \[SCRUM-[0-9]+\] ]]; then
+            echo "✓ Valid Jira ticket ID found in commit message"
+            exit 0
+          else
+            echo "Pipeline Failed: No commit contains a Jira ticket ID (expected format: [SCRUM-###])"
             exit 1
           fi
 
