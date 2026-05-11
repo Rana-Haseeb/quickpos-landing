@@ -1,0 +1,2 @@
+QuickPOS Test Suite Results:
+Tests run: 5. Passed: 5. Failed: 0.
