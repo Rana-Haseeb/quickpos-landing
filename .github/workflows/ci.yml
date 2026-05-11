@@ -24,17 +24,15 @@ jobs:
 
       - name: Verify Jira Ticket ID in Commit
         run: |
-          HAS_JIRA_ID=false
-          while read -r msg; do
-            echo "Checking commit message: $msg"
-            if [[ "$msg" =~ \[SCRUM-[0-9]+\] ]]; then
-              HAS_JIRA_ID=true
-              break
-            fi
-          done < <(git log -10 --pretty=format:"%s")
+          # Get ONLY the latest commit message
+          LATEST_MSG=$(git log -1 --pretty=format:"%s")
+          echo "Checking latest commit message: $LATEST_MSG"
 
-          if [ "$HAS_JIRA_ID" = false ]; then
-            echo "Pipeline Failed: No commit contains a Jira ticket ID."
+          # Check if the latest message contains the [SCRUM-XXXX] pattern
+          if [[ "$LATEST_MSG" =~ \[SCRUM-[0-9]+\] ]]; then
+            echo "✅ Validation Passed: Jira Ticket ID found."
+          else
+            echo "❌ Pipeline Failed: The latest commit message is missing a Jira ticket ID (e.g., [SCRUM-19])."
             exit 1
           fi
 
