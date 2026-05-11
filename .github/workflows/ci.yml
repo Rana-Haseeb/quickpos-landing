@@ -24,8 +24,12 @@ jobs:
 
       - name: Verify Jira Ticket ID in Commit
         run: |
-          COMMIT_MSG=$(git log -1 --pretty=format:"%s")
-          echo "Checking commit message: $COMMIT_MSG"
+          # For pull requests, use the PR head commit; for push, use the latest commit
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            COMMIT_MSG=$(git log -1 --format=%s ${{ github.event.pull_request.head.sha }})
+          else
+            COMMIT_MSG=$(git log -1 --pretty=format:"%s")
+          fi
 
           if [[ "$COMMIT_MSG" =~ \[SCRUM-[0-9]+\] ]]; then
             echo "✓ Valid Jira ticket ID found in commit message"
